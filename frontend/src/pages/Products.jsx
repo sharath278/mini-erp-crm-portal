@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -17,19 +17,10 @@ const Products = () => {
 
     const [editingId, setEditingId] = useState(null);
 
-    const token = localStorage.getItem("token");
-
-    const headers = {
-        Authorization: `Bearer ${token}`
-    };
-
     const getProducts = async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:5000/api/products?search=${search}`,
-                {
-                    headers
-                }
+            const response = await api.get(
+                `/products?search=${search}`
             );
 
             setProducts(response.data.products);
@@ -67,31 +58,24 @@ const Products = () => {
         e.preventDefault();
 
         try {
+            const productData = {
+                ...formData,
+                unitPrice: Number(formData.unitPrice),
+                currentStock: Number(formData.currentStock),
+                minStockQuantity: Number(
+                    formData.minStockQuantity
+                )
+            };
+
             if (editingId) {
-                await axios.put(
-                    `http://localhost:5000/api/products/${editingId}`,
-                    {
-                        ...formData,
-                        unitPrice: Number(formData.unitPrice),
-                        currentStock: Number(formData.currentStock),
-                        minStockQuantity: Number(formData.minStockQuantity)
-                    },
-                    {
-                        headers
-                    }
+                await api.put(
+                    `/products/${editingId}`,
+                    productData
                 );
             } else {
-                await axios.post(
-                    "http://localhost:5000/api/products",
-                    {
-                        ...formData,
-                        unitPrice: Number(formData.unitPrice),
-                        currentStock: Number(formData.currentStock),
-                        minStockQuantity: Number(formData.minStockQuantity)
-                    },
-                    {
-                        headers
-                    }
+                await api.post(
+                    "/products",
+                    productData
                 );
             }
 
@@ -118,7 +102,8 @@ const Products = () => {
             unitPrice: product.unitPrice || "",
             currentStock: product.currentStock || "",
             minStockQuantity: product.minStockQuantity || "",
-            warehouseLocation: product.warehouseLocation || ""
+            warehouseLocation:
+                product.warehouseLocation || ""
         });
     };
 
@@ -128,8 +113,10 @@ const Products = () => {
             <div className="page-header">
                 <div>
                     <h1>Products & Inventory</h1>
+
                     <p>
-                        Manage products, stock and warehouse information.
+                        Manage products, stock and warehouse
+                        information.
                     </p>
                 </div>
             </div>
@@ -314,7 +301,9 @@ const Products = () => {
 
                                                     <button
                                                         onClick={() =>
-                                                            handleEdit(product)
+                                                            handleEdit(
+                                                                product
+                                                            )
                                                         }
                                                     >
                                                         Edit

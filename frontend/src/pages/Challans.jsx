@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 const Challans = () => {
     const [challans, setChallans] = useState([]);
@@ -8,6 +7,7 @@ const Challans = () => {
     const [products, setProducts] = useState([]);
 
     const [customerId, setCustomerId] = useState("");
+
     const [items, setItems] = useState([
         {
             productId: "",
@@ -15,20 +15,9 @@ const Challans = () => {
         }
     ]);
 
-    const token = localStorage.getItem("token");
-
-    const headers = {
-        Authorization: `Bearer ${token}`
-    };
-
     const getChallans = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:5000/api/challans",
-                {
-                    headers
-                }
-            );
+            const response = await api.get("/challans");
 
             setChallans(response.data.challans);
         } catch (error) {
@@ -38,12 +27,7 @@ const Challans = () => {
 
     const getCustomers = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:5000/api/customers",
-                {
-                    headers
-                }
-            );
+            const response = await api.get("/customers");
 
             setCustomers(response.data.customers);
         } catch (error) {
@@ -53,12 +37,7 @@ const Challans = () => {
 
     const getProducts = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:5000/api/products",
-                {
-                    headers
-                }
-            );
+            const response = await api.get("/products");
 
             setProducts(response.data.products);
         } catch (error) {
@@ -95,11 +74,11 @@ const Challans = () => {
             return;
         }
 
-        const updatedItems = items.filter(
-            (_, itemIndex) => itemIndex !== index
+        setItems(
+            items.filter(
+                (_, itemIndex) => itemIndex !== index
+            )
         );
-
-        setItems(updatedItems);
     };
 
     const resetForm = () => {
@@ -122,16 +101,10 @@ const Challans = () => {
                 quantity: Number(item.quantity)
             }));
 
-            await axios.post(
-                "http://localhost:5000/api/challans",
-                {
-                    customerId: Number(customerId),
-                    items: formattedItems
-                },
-                {
-                    headers
-                }
-            );
+            await api.post("/challans", {
+                customerId: Number(customerId),
+                items: formattedItems
+            });
 
             alert("Draft challan created successfully");
 
@@ -150,12 +123,8 @@ const Challans = () => {
 
     const confirmChallan = async (id) => {
         try {
-            await axios.put(
-                `http://localhost:5000/api/challans/${id}/confirm`,
-                {},
-                {
-                    headers
-                }
+            await api.put(
+                `/challans/${id}/confirm`
             );
 
             alert(
@@ -177,12 +146,8 @@ const Challans = () => {
 
     const cancelChallan = async (id) => {
         try {
-            await axios.put(
-                `http://localhost:5000/api/challans/${id}/cancel`,
-                {},
-                {
-                    headers
-                }
+            await api.put(
+                `/challans/${id}/cancel`
             );
 
             alert("Challan cancelled successfully");
@@ -203,6 +168,7 @@ const Challans = () => {
         <div className="page-container">
 
             <div className="page-header">
+
                 <div>
                     <h1>Sales Challans</h1>
 
@@ -210,6 +176,7 @@ const Challans = () => {
                         Create and manage customer sales challans.
                     </p>
                 </div>
+
             </div>
 
             <div className="form-card challan-form">
@@ -229,6 +196,7 @@ const Challans = () => {
                             }
                             required
                         >
+
                             <option value="">
                                 Select Customer
                             </option>
@@ -242,6 +210,7 @@ const Challans = () => {
                                     {customer.businessName}
                                 </option>
                             ))}
+
                         </select>
 
                     </div>
@@ -266,6 +235,7 @@ const Challans = () => {
                                 }
                                 required
                             >
+
                                 <option value="">
                                     Select Product
                                 </option>
@@ -279,6 +249,7 @@ const Challans = () => {
                                         {product.currentStock}
                                     </option>
                                 ))}
+
                             </select>
 
                             <input
@@ -340,7 +311,6 @@ const Challans = () => {
                     <table>
 
                         <thead>
-
                             <tr>
                                 <th>Challan Number</th>
                                 <th>Customer</th>
@@ -349,7 +319,6 @@ const Challans = () => {
                                 <th>Created By</th>
                                 <th>Action</th>
                             </tr>
-
                         </thead>
 
                         <tbody>

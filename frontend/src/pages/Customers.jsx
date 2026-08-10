@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 
 const Customers = () => {
     const [customers, setCustomers] = useState([]);
@@ -20,19 +20,10 @@ const Customers = () => {
 
     const [editingId, setEditingId] = useState(null);
 
-    const token = localStorage.getItem("token");
-
-    const headers = {
-        Authorization: `Bearer ${token}`
-    };
-
     const getCustomers = async () => {
         try {
-            const response = await axios.get(
-                `http://localhost:5000/api/customers?search=${search}`,
-                {
-                    headers
-                }
+            const response = await api.get(
+                `/customers?search=${search}`
             );
 
             setCustomers(response.data.customers);
@@ -74,20 +65,14 @@ const Customers = () => {
 
         try {
             if (editingId) {
-                await axios.put(
-                    `http://localhost:5000/api/customers/${editingId}`,
-                    formData,
-                    {
-                        headers
-                    }
+                await api.put(
+                    `/customers/${editingId}`,
+                    formData
                 );
             } else {
-                await axios.post(
-                    "http://localhost:5000/api/customers",
-                    formData,
-                    {
-                        headers
-                    }
+                await api.post(
+                    "/customers",
+                    formData
                 );
             }
 
@@ -129,7 +114,9 @@ const Customers = () => {
             <div className="page-header">
                 <div>
                     <h1>Customers</h1>
-                    <p>Manage customer relationships and follow-ups.</p>
+                    <p>
+                        Manage customer relationships and follow-ups.
+                    </p>
                 </div>
             </div>
 
@@ -189,9 +176,17 @@ const Customers = () => {
                             value={formData.customerType}
                             onChange={handleChange}
                         >
-                            <option value="RETAIL">Retail</option>
-                            <option value="WHOLESALE">Wholesale</option>
-                            <option value="DISTRIBUTOR">Distributor</option>
+                            <option value="RETAIL">
+                                Retail
+                            </option>
+
+                            <option value="WHOLESALE">
+                                Wholesale
+                            </option>
+
+                            <option value="DISTRIBUTOR">
+                                Distributor
+                            </option>
                         </select>
 
                         <textarea
@@ -207,9 +202,17 @@ const Customers = () => {
                             value={formData.status}
                             onChange={handleChange}
                         >
-                            <option value="LEAD">Lead</option>
-                            <option value="ACTIVE">Active</option>
-                            <option value="INACTIVE">Inactive</option>
+                            <option value="LEAD">
+                                Lead
+                            </option>
+
+                            <option value="ACTIVE">
+                                Active
+                            </option>
+
+                            <option value="INACTIVE">
+                                Inactive
+                            </option>
                         </select>
 
                         <input
@@ -315,7 +318,9 @@ const Customers = () => {
                                             <td>
                                                 <button
                                                     onClick={() =>
-                                                        handleEdit(customer)
+                                                        handleEdit(
+                                                            customer
+                                                        )
                                                     }
                                                 >
                                                     Edit
